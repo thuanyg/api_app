@@ -36,7 +36,7 @@ if ($result->num_rows > 0) {
         $postsWithDetails[] = $post;
     }
     // Chuyển đổi kết quả thành định dạng JSON
-    $response = json_encode(array("posts" => $postsWithDetails));
+    $response = json_encode($postsWithDetails);
 
     // Trả về JSON như là kết quả của API
     header('Content-Type: application/json');
