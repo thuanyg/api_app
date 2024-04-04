@@ -1,55 +1,33 @@
-
-
 <?php
-class Database
-// <!-- Class để thực hiện kết nối - Thực thi câu lệnh SQL  -->
-{
-    private $server = 'localhost';
-    private $username = 'root';
-    private $password = '';
-    private $dbname = 'dbdaapp';
+class Database {
+    private $server = 'svr-freehost';
+    private $username = 'cqfzvzkv_thuanht';
+    private $password = 'thuan2k3yg';
+    private $dbname = 'cqfzvzkv_eatez';
     private $conn = null;
-    function Connect()
-    {
+
+    function __construct() {
+        $this->connect();
+    }
+
+    private function connect() {
         $this->conn = new mysqli($this->server, $this->username, $this->password, $this->dbname);
         if ($this->conn->connect_error) {
-            die . "Lỗi kết nối" . $this->conn->connect_error;
-            return false;
-        } else return true;
-    }
-    // RETURN ARRAY
-    function Execute($sql)
-    {
-        if ($this->Connect()) {
-            $result = $this->conn->query($sql);
-            if (!$result) {
-                $this->closeConnect();
-                return false;
-            } else {
-                $this->closeConnect();
-                return true;
-            }
+            die("Lỗi kết nối: " . $this->conn->connect_error);
         }
     }
 
-    function Query($sql)
-    {
-        if ($this->Connect()) {
-            $result = $this->conn->query($sql);
-            return $result;
-        }
+    public function query($sql) {
+        $result = $this->conn->query($sql);
+        return $result;
     }
 
-    function escapedString($str){
-        $escapedString = mysqli_real_escape_string(new mysqli($this->server, $this->username, $this->password, $this->dbname), $str);
-        return $escapedString;
+    public function escapeString($str) {
+        return mysqli_real_escape_string($this->conn, $str);
     }
-    function closeConnect()
-    {
+
+    public function close() {
         $this->conn->close();
     }
 }
-
-    // $db = new Database();
-    // $data = $db->Execute("select * from users");
-    // print_r($data);
+?>
