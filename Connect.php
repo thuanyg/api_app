@@ -1,8 +1,8 @@
 <?php
 class Database {
-    private $server = 'svr-freehost';
-    private $username = 'cqfzvzkv_thuanht';
-    private $password = 'thuan2k3yg';
+    private $server = 'localhost';
+    private $username = 'root';
+    private $password = '';
     private $dbname = 'cqfzvzkv_eatez';
     private $conn = null;
 
