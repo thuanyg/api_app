@@ -19,7 +19,7 @@ if(!isset($_REQUEST['userid']) || !isset($_REQUEST['content']) || !isset($_REQUE
             $sql = "select u.fullName,u.avatar_image from users u where userid = ".$userid;
             $result1 = $db->query($sql);
             if($row = $result1->fetch_assoc()){
-                $user = array(
+                $comment = array(
                 'userid' => $userid,
                 'fullName' => $row['fullName'],
                 'content' => $content,
@@ -30,7 +30,7 @@ if(!isset($_REQUEST['userid']) || !isset($_REQUEST['content']) || !isset($_REQUE
         
         }
         $response['status'] = true;
-        $response['data'] = $user;
+        $response['data'] = $comment;
     }
     
 }
