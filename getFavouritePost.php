@@ -37,7 +37,8 @@ if (isset($_REQUEST['userid'])) {
         r.res_id as RestaurantId,
         r.res_name as RestaurantName,
         r.res_address as RestaurantAddress,
-        r.res_image as RestaurantImage
+        r.res_image as RestaurantImage,
+        fp.favourite_id
         FROM posts p
         JOIN dish d ON p.dish_id = d.dish_id
         JOIN restaurant r ON d.res_id = r.res_id 
@@ -55,6 +56,7 @@ if (isset($_REQUEST['userid'])) {
                 while ($row = $result1->fetch_assoc()) {
                     // Tạo một đối tượng mới để lưu trữ thông tin của mỗi bài viết
                     $post = array(
+                        "favourite_id"=>$row["favourite_id"],
                         "post_id" => $row["post_id"],
                         "title" => $row["title"],
                         "content" => $row["content"],
