@@ -1,15 +1,6 @@
 <?php
 include "./Connect.php";
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
-}
-
-// Tiếp tục xử lý yêu cầu bình thường
+include "./header.php";
 
 $db = new Database();
 $num_row = 10;
@@ -20,6 +11,14 @@ $sql = "SELECT COUNT(*) as 'total' FROM posts p
 $total_records = 0;
 $result = $db->query($sql);
 if ($result->num_rows > 0) {
+    
+    if(isset($_REQUEST['latest'])){
+        
+        // Lấy những bài viết mới nhất
+        echo "latest";
+        return;
+    }
+    
     $r = $result->fetch_assoc();
     $total_records = $r["total"];
 
