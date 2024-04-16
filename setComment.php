@@ -2,15 +2,15 @@
 include('./Connect.php');
 include "./header.php";
 $db  = new Database();
-if(!isset($_REQUEST['userid']) || !isset($_REQUEST['content']) || !isset($_REQUEST['date']) || !isset($_REQUEST['post_id'])){
+if(!isset($_REQUEST['userid']) || !isset($_REQUEST['content']) || !isset($_REQUEST['post_id'])){
     $response['status'] = false;
     $response['message']= "error data";
 }else{
     $userid = $_REQUEST['userid'];
     $post_id = $_REQUEST['post_id'];
     $content = $_REQUEST['content'];
-    $date = $_REQUEST['date'];
-    if($userid=="" || $post_id=="" || $content=="" || $date==""){
+    $date =  date("Y-m-d H:i:s");
+    if($userid=="" || $post_id=="" || $content==""){
         $response['status'] = false;
         $response['message']= "error data";
     }else{
