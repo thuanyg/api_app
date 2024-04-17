@@ -2,14 +2,15 @@
 include('./Connect.php');
 include "./header.php";
 $db  = new Database();
-if (!isset($_REQUEST['userid']) || !isset($_REQUEST['post_id']) || !isset($_REQUEST['date'])) {
+if (!isset($_REQUEST['userid']) || !isset($_REQUEST['post_id'])) {
     $response['status'] = false;
     $response['message'] = "error data";
 } else {
     $userid = $_REQUEST['userid'];
     $post_id = $_REQUEST['post_id'];
-    $date = $_REQUEST['date'];
-    if($userid=="" || $post_id=="" || $date==""){
+    $date =  date("Y-m-d H:i:s");
+    
+    if($userid=="" || $post_id=="" ){
         $response['status'] = false;
         $response['message'] = "error data";
     }else{
@@ -22,7 +23,7 @@ if (!isset($_REQUEST['userid']) || !isset($_REQUEST['post_id']) || !isset($_REQU
             $response['message'] = "Record already exists";
         } else {
             // Nếu không tồn tại bản ghi, thực hiện chèn dữ liệu mới
-            $sql_insert = "INSERT INTO favourite_post (post_id, userid, date) VALUES(" . $post_id . "," . $userid . ",'" . $date . "')";
+            $sql_insert = "INSERT INTO favourite_post (post_id,date, userid) VALUES(" . $post_id . ",'" . $date . "',". $userid .")";
             $result_insert = $db->query($sql_insert);
             if ($result_insert) {
                 // Truy vấn dữ liệu sau khi chèn
