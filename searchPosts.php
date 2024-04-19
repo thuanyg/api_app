@@ -4,30 +4,31 @@ include "./header.php";
 $db = new Database();
 $num_row = 10; // Số bài viết trên mỗi trang
 
-if (isset($_REQUEST["keyword"])) {
-    $keyword = $_REQUEST['keyword'];
-    $sql = "SELECT p.*, d.Id as DishId,
-    d.Name as DishName, 
-    d.Description as DishDescription,
-    d.Image as DishImage,
-    r.Id as RestaurantId,
-    r.Name as RestaurantName,
-    r.Address as RestaurantAddress,
-    r.Image as RestaurantImage
-    FROM posts p 
-    JOIN dish d ON p.DishId = d.Id 
-    JOIN restaurant r ON d.resID = r.Id 
-    WHERE d.Name LIKE '%" . $keyword . "%'";
+if (isset($_GET["keyword"])) {
+    $keyword = $_GET['keyword'];
 
+    $sql = "SELECT p.*, d.dish_id as DishId,
+    d.dish_name as DishName, 
+    d.dish_desc as DishDescription,
+    d.dish_image as DishImage,
+    r.res_id as RestaurantId,
+    r.res_name as RestaurantName,
+    r.res_address as RestaurantAddress,
+    r.res_image as RestaurantImage
+    FROM posts p
+    JOIN dish d ON p.dish_id = d.dish_id
+    JOIN restaurant r ON d.res_id = r.res_id 
+    WHERE d.Name LIKE '%" . $keyword;
     $result = $db->Query($sql);
     if ($result->num_rows == 0) {
-        echo "0 results";
+        $response['status'] = false;
+        $response['message'] = "not found";
     } else {
         $num_of_page = ceil($result->num_rows / $num_row); // Số trang cần thiết
-        if (!isset($_REQUEST['page'])) {
+        if (!isset($_GET['page'])) {
             $page = 1;
         } else {
-            $page = $_REQUEST['page'];
+            $page = $_GET['page'];
         }
         if ($page < 1) {
             $page = 1;
@@ -35,20 +36,29 @@ if (isset($_REQUEST["keyword"])) {
         if ($page > $num_of_page) {
             $page = $num_of_page;
         }
+        $pagination = array(
+            "currentPage" => intval($page),
+            "totalPage" =>  intval($num_of_page),
+            "totalItem" => intval($total_records)
+        );
+
         $offset = ($page - 1) * $num_row; // Tính toán vị trí bắt đầu của kết quả
 
-        $sql = "SELECT p.*, d.Id as DishId,
-    d.Name as DishName, 
-    d.Description as DishDescription,
-    d.Image as DishImage,
-    r.Id as RestaurantId,
-    r.Name as RestaurantName,
-    r.Address as RestaurantAddress,
-    r.Image as RestaurantImage
-    FROM posts p 
-    JOIN dish d ON p.DishId = d.Id 
-    JOIN restaurant r ON d.resID = r.Id 
-    WHERE d.Name LIKE '%" . $keyword . "%'" . " order by p.Time DESC LIMIT " . $offset . "," . $num_row;
+
+        $sql = "SELECT p.*, d.dish_id as DishId,
+     d.dish_name as DishName, 
+     d.dish_desc as DishDescription,
+     d.dish_image as DishImage,
+     r.res_id as RestaurantId,
+     r.res_name as RestaurantName,
+     r.res_address as RestaurantAddress,
+     r.res_image as RestaurantImage
+     FROM posts p
+     JOIN dish d ON p.dish_id = d.dish_id
+     JOIN restaurant r ON d.res_id = r.res_id 
+     WHERE d.Name LIKE '%" . $keyword . "%'" . " 
+     ORDER BY p.date DESC
+     LIMIT " . $offset . "," . $num_row;
 
         $result1 = $db->Query($sql);
         if ($result1->num_rows > 0) {
@@ -57,37 +67,36 @@ if (isset($_REQUEST["keyword"])) {
             while ($row = $result1->fetch_assoc()) {
                 // Tạo một đối tượng mới để lưu trữ thông tin của mỗi bài viết
                 $post = array(
-                    "Id" => $row["Id"],
-                    "UserId" => $row["UserId"],
-                    "Content" => $row["Content"],
-                    "Image" => $row["Image"],
-                    "Time" => $row["Time"],
-                    "Dish" => array(
-                        "Id" => $row["DishId"],
-                        "Name" => $row["DishName"],
-                        "Description" => $row["DishDescription"],
-                        "Image" => $row["DishImage"]
+                    "post_id" => $row["post_id"],
+                    "title" => $row["title"],
+                    "content" => $row["content"],
+                    "thumbnail_image" => $row["thumbnail_image"],
+                    "order_grab" => $row["order_grab"],
+                    "date" => $row["date"],
+                    "dish" => array(
+                        "dish_id" => $row["DishId"],
+                        "dish_name" => $row["DishName"],
+                        "dish_desc" => $row["DishDescription"],
+                        "dish_image" => $row["DishImage"]
                     ),
                     "Restaurant" => array(
-                        "Id" => $row["RestaurantId"],
-                        "Name" => $row["RestaurantName"],
-                        "Address" => $row["RestaurantAddress"],
-                        "Image" => $row["RestaurantImage"]
+                        "res_id" => $row["RestaurantId"],
+                        "res_name" => $row["RestaurantName"],
+                        "res_address" => $row["RestaurantAddress"],
+                        "res_image" => $row["RestaurantImage"]
                     )
                 );
-                // Thêm bài viết vào mảng
+                // Chuyển đổi kết quả thành định dạng JSON
                 $postsWithDetails[] = $post;
             }
-            // Chuyển đổi kết quả thành định dạng JSON
-            $response = json_encode($postsWithDetails);
-
-            // Trả về JSON như là kết quả của API
-            header('Content-Type: application/json');
-            echo $response;
-        } else {
-            echo "0 results";
-        }
-
-        $db->closeConnect();
+            $response['status'] = true;
+            $response['data'] = $postsWithDetails;
+            $response['message'] = "Get data successfull.";
+            $response["pagination"] = $pagination;
+        } 
     }
 }
+
+echo json_encode($response);
+$db->close(); // Thêm dòng này để đóng kết nối với cơ sở dữ liệu
+?>

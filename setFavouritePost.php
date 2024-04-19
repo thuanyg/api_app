@@ -25,7 +25,7 @@ if (!isset($_REQUEST['userid']) || !isset($_REQUEST['post_id'])) {
             // Nếu không tồn tại bản ghi, thực hiện chèn dữ liệu mới
             $sql_insert = "INSERT INTO favourite_post (post_id,date, userid) VALUES(" . $post_id . ",'" . $date . "',". $userid .")";
             $result_insert = $db->query($sql_insert);
-            if ($result_insert) {
+            if ($result_insert-> num_rows>0) {
                 // Truy vấn dữ liệu sau khi chèn
                 $sql_select = "SELECT p.*, d.dish_id as DishId,
                 d.dish_name as DishName, 

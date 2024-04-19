@@ -32,8 +32,25 @@ if ($result->num_rows > 0) {
     if ($page < 1) {
         $page = 1;
     }
+    
+    
+    // Pagination
+    $pagination = array(
+            "currentPage" => intval($page),
+            "totalPage" =>  intval($num_of_page),
+            "totalItem" => intval($total_records)
+    );
+    
+    
+    
+    
     if ($page > $num_of_page) {
-        $page = $num_of_page;
+        $response['status'] = false;
+        $response['data'] = null;
+        $response['message'] = "Data not found in this page.";
+        $response["pagination"] = $pagination;
+        echo json_encode($response);
+        return;
     }
     $offset = ($page - 1) * $num_row; // Tính toán vị trí bắt đầu của kết quả
 
@@ -64,6 +81,7 @@ LIMIT " . $offset . "," . $num_row;
                 "title" => $row["title"],
                 "content" => $row["content"],
                 "thumbnail_image" => $row["thumbnail_image"],
+                "order_grab" => $row["order_grab"],
                 "date" => $row["date"],
                 "dish" => array(
                     "dish_id" => $row["DishId"],
@@ -75,18 +93,22 @@ LIMIT " . $offset . "," . $num_row;
                     "res_id" => $row["RestaurantId"],
                     "res_name" => $row["RestaurantName"],
                     "res_address" => $row["RestaurantAddress"],
-                    "res_address" => $row["RestaurantImage"]
+                    "res_image" => $row["RestaurantImage"]
                 )
             );
             // Thêm bài viết vào mảng
             $postsWithDetails[] = $post;
         }
-        $response['status'] = true; // Đánh dấu trạng thái thành công
-        $response['data'] = $postsWithDetails; // Thêm dữ liệu vào mảng kết quả
+        $response['status'] = true; 
+        $response['data'] = $postsWithDetails; 
+        $response['message'] = "Get data successfull.";
+        $response["pagination"] = $pagination;
     }
 } else {
-    $response['status'] = false; // Đánh dấu trạng thái lỗi
-    $response['message'] = 'No results found'; // Thêm thông điệp lỗi
+    $response['status'] = false;
+    $response['data'] = $postsWithDetails; 
+    $response['message'] = 'No results found';
+    $response["pagination"] = $pagination;
 }
 
 echo json_encode($response);
